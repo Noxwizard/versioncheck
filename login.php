@@ -134,11 +134,10 @@ else
             $sth = $db->prepare($sql);
             $sth->execute(array(':email' => $provider_email));
             $result = $sth->fetch(PDO::FETCH_ASSOC);
-            var_dump($result);
             if ($result !== false)
             {
                 $user->session_create($result['user_id'], PROVIDER_NULL);
-                if (!$user->add_provider($provider_id, $provider_user_id, $accessToken->getToken(), $accessToken->getRefreshToken()))
+                if (!$user->add_provider($provider_id, $provider_user_id))
                 {
                     exit;
                 }
@@ -166,7 +165,7 @@ else
 
             $user_id = $db->lastInsertId();
             $user->session_create($user_id, PROVIDER_NULL);
-            if (!$user->add_provider($provider_id, $provider_user_id, $accessToken->getToken(), $accessToken->getRefreshToken()))
+            if (!$user->add_provider($provider_id, $provider_user_id))
             {
                 exit;
             }

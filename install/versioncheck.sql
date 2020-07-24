@@ -5,9 +5,7 @@
 CREATE TABLE `linked_providers` (
   `user_id` int(11) NOT NULL,
   `provider_id` int(11) NOT NULL,
-  `external_user_id` int(11) NOT NULL,
-  `access_token` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `refresh_token` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL
+  `external_user_id` varchar(30) COLLATE utf8mb4_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- --------------------------------------------------------
