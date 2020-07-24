@@ -1,0 +1,4 @@
+# Block .git access (including subdirectories)
+RewriteEngine On
+RewriteRule "^(.*/)?\.git/.*" - [F,L]
+RewriteRule "^(.*/)?install/.*" - [F,L]

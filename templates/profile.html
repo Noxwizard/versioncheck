@@ -1,0 +1,100 @@
+{{ include('header.html') }}
+<div class="container">
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    {% if not delete or error %}
+    <h2>Profile Information</h2>
+    <div class="col-6">
+        <form method="post" action="profile.php">
+            <div class="form-group row">
+                <label for="name" class="col-sm-4 col-form-label">Name</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="name" value="{{ username }}" readonly title="Username from linked account">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="email" class="col-sm-4 col-form-label">Email</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="email" value="{{ email }}" readonly title="Email from linked account">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="subemail" class="col-sm-4 col-form-label">Subscription Email</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="subemail" name="subemail" value="{{ subemail }}">
+                    <small class="form-text text-muted">The email to send notifications to.</small>
+                </div>
+            </div>
+            <input type="hidden" name="token" value="{{ user.form_token }}">
+            <button type="submit" class="btn btn-primary float-right" name="submit">Save</button>
+            <br class="clearfix">
+        </form>
+    </div>
+    <h2>Linked Social Accounts</h2>
+    <div class="col-3">
+        <div class="row">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="github-addon"><i class="fab fa-github" aria-hidden="true" title="Github"></i></span>
+                </div>
+                <input type="text" class="form-control" aria-describedby="github-addon" value="{% if github %}Linked{% else %}Unlinked{% endif %}" readonly>
+                <div class="input-group-append">
+                    {% if github %}
+                    <a href="profile.php?provider=github&mode=unlink&token={{ user.form_token }}" role="button" class="btn btn-warning">Unlink</a>
+                    {% else %}
+                    <a href="login.php?provider=github" role="button" class="btn btn-info">Link</a>
+                    {% endif %}
+                </div>
+            </div>
+        
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="gitlab-addon"><i class="fab fa-gitlab" aria-hidden="true" title="Gitlab"></i></span>
+                </div>
+                <input type="text" class="form-control" aria-describedby="gitlab-addon" value="{% if gitlab %}Linked{% else %}Unlinked{% endif %}" readonly>
+                <div class="input-group-append">
+                    {% if gitlab %}
+                    <a href="profile.php?provider=gitlab&mode=unlink&token={{ user.form_token }}" role="button" class="btn btn-warning">Unlink</a>
+                    {% else %}
+                    <a href="login.php?provider=gitlab" role="button" class="btn btn-info">Link</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="google-addon"><i class="fab fa-google" aria-hidden="true" title="Google"></i></span>
+                </div>
+                <input type="text" class="form-control" aria-describedby="google-addon" value="{% if google %}Linked{% else %}Unlinked{% endif %}" readonly>
+                <div class="input-group-append">
+                    {% if google %}
+                    <a href="profile.php?provider=google&mode=unlink&token={{ user.form_token }}" role="button" class="btn btn-warning">Unlink</a>
+                    {% else %}
+                    <a href="login.php?provider=google" role="button" class="btn btn-info">Link</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2>Delete Account</h2>
+    <div class="col-6">
+        <p>This action will delete your account, subscriptions, and any stored access tokens. This cannot be undone.</p>
+        <form method="post" action="profile.php">
+            <input class="form-check-input" type="checkbox" value="understood" name="understood" id="understood">
+            <label class="form-check-label" for="understood">I understand that my account will be deleted</label>
+            <br />
+            <input type="hidden" name="token" value="{{ user.form_token }}">
+            <button type="submit" class="btn btn-danger" name="delete">Delete Account</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="alert alert-success" role="alert">
+        Account deleted successfully
+    </div>
+    {% endif %}
+</div>
+
+{{ include('footer.html') }}

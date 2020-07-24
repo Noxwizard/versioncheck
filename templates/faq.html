@@ -1,0 +1,66 @@
+{{ include('header.html') }}
+
+<div class="container">
+    <div class="row">
+        <h2>FAQ</h2>
+    </div>
+    <div class="row">
+        <strong>General</strong>
+        <ul>
+            <li><strong>How does it work?</strong></li>
+            <li>Every hour, the server checks the version info endpoint for the various software and checks to see if a newer version is listed than what 
+                is currently stored. If there is, it updates it and sends out emails to subscribed users.
+            </li>
+            <li class="list-unstyled">&nbsp;</li>
+            <li><strong>What type of software do you track?</strong></li>
+            <li>It started out as F/OSS and friends of F/OSS, but anything where a version number can easily be found could be tracked.</li>
+            <li class="list-unstyled">&nbsp;</li>
+            <li><strong>Can you track software X?</strong></li>
+            <li>Maybe. Create a GitHub issue and we'll see.</li>
+            <li class="list-unstyled">&nbsp;</li>
+            <li><strong>What if there isn't a &quot;version endpoint&quot;?</strong></li>
+            <li>Scraping web pages is a less reliable way of doing it, so I'd rather avoid that. Make a GitHub issue about it and we'll see.</li>
+            <li class="list-unstyled">&nbsp;</li>
+        </ul>
+        <strong>Registration</strong>
+        <ul>
+            <li><strong>Why can't I sign up with an email address and password?</strong></li>
+            <li>User management is annoying. Rather than deal with email verification, password resets, and bot signups, I just use existing OAuth providers.</li>
+            <li class="list-unstyled">&nbsp;</li>
+            <li><strong>What information do you gather from the login providers?</strong></li>
+            <li>Your email and username. The username is just so you know what account it was linked to. The email is used if you sign into another provider, I 
+                try to link it to your already existing account. It also provides a default subsription email address to use.
+            </li>
+            <li class="list-unstyled">&nbsp;</li>
+            <li><strong>After unlinking a provider, I can still log in with it.</strong></li>
+            <li>Not all providers offer a way to unlink an account, so I simply forget that you had that provider. Due to the above though, it will automatically
+                link it to your account if you use it again. To stop this, you can revoke the access through the provider directly. This also allows me to not
+                have to store your access token.
+            </li>
+            <li class="list-unstyled">&nbsp;</li>
+            <li><strong>Can you add OAuth provider X?</strong></li>
+            <li>Maybe. Do they have a FontAwesome icon? Create a GitHub issue and we'll see.</li>
+            <li class="list-unstyled">&nbsp;</li>
+        </ul>
+        <strong>Privacy</strong>
+        <ul>
+            <li><strong>Do you share my information with anyone?</strong></li>
+            <li>Your information is not sold to anyone. However, your email address is provided to <a href="https://www.mailgun.com/">MailGun</a> in order for 
+                us to send you notification emails. MailGun maintains a copy of your email address for 30 days after the message has been sent. See their 
+                <a href="https://www.mailgun.com/gdpr/">GDPR</a> page for more information, specifically the &quot;Message Metadata&quot; section.
+            </li>
+            <li class="list-unstyled">&nbsp;</li>
+            <li><strong>Stop spamming me, I didn't sign up for this!</strong></li>
+            <li>You probably did and just forgot. That's okay, every email includes a link to unsubscribe from that notification. You can also delete your 
+                account through your profile.
+            </li>
+            <li class="list-unstyled">&nbsp;</li>
+            <li><strong>GDPR! Cookies! Herp derp</strong></li>
+            <li>I use cookies to track a single session ID to keep you logged in. If you want to delete your account, there's a button for that on your profile. 
+                Move along.</li>
+            <li class="list-unstyled">&nbsp;</li>
+        </ul>
+    </div>
+</div>
+
+{{ include('footer.html') }}

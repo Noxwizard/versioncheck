@@ -1,0 +1,155 @@
+{{ include('header.html') }}
+
+<div class="container">
+    <div class="row">
+        <p>Get update notifications for the software you use.</p>
+        <p>Rather than subscribe to every vendor's newsletter or periodically check your bookmarks and hope you catch
+            when a new version is released, subscribe here and never miss an update.
+        <p></p>
+        <p>We monitor the official release endpoints for all of the software we track. It's like clicking refresh in
+            your software's admin panel, but we do it for you.</p>
+    </div>
+    <div class="row">
+        <h2>Software</h2>
+    </div>
+    <div class="row">
+        {% for software in all_software %}
+        <p>&nbsp;</p>
+        <section>
+            <form action="subscribe.php" method="post">
+                <span class="h4">{{ software.info.name }}</span><br /><span>by {{ software.info.vendor }}</span> <span><a
+                        href="{{ software.info.url }}">Visit Site</a></span></span>
+                <span class="float-right"><label for="{{ software.info.class }}-all" class="float-right"><input
+                            type="checkbox" class="form-check-input" id="{{ software.info.class }}-all" name="{{ software.info.class }}-all"
+                            onchange="toggleAllCheckbox(this, '{{ software.info.class }}')"
+                            title="Receive updates for all current and future branches" 
+                            {% if software.info.subscribed %}checked{% endif %}
+                            {% if user.user_id == 0 %}disabled{% endif %}> All Updates</label></span>
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col">Branch</th>
+                            <th scope="col">Latest Version</th>
+                            <th scope="col">Release Date</th>
+                            <th scope="col">Last Check</th>
+                            <th scope="col">Subscribed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for release in software.releases %}
+                        <tr>
+                            <td>{{ release.branch }}</td>
+                            <td>{{ release.version }}</td>
+                            <td>{{ release.release_date }}{% if release.estimated %}*{% endif %}
+                                {% if release.announcement %}
+                                <a href="{{ release.announcement }}">
+                                    <i class="fas fa-external-link-alt" title="Read announcement"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                            <td>{{ release.last_check }}</td>
+                            <td style="text-align: center;">&nbsp;&nbsp;<input class="form-check-input" type="checkbox"
+                                    name="{{ software.info.class }}-sub[]" value="{{ release.branch }}" title="Subscribe"
+                                    onchange="toggleSingleCheckbox(this, '{{ software.info.class }}', '{{ release.branch }}')"
+                                    {% if release.subscribed %}checked{% endif %}
+                                    {% if user.user_id == 0 or software.info.subscribed %}disabled{% endif %}></td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="hideme">
+                            <td colspan="4">&nbsp;</td>
+                            <td style="text-align: center;"><button type="submit" class="btn btn-sm btn-primary" name="update">Update</button></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <input type="hidden" name="software" value="{{ software.info.class }}">
+                <input type="hidden" name="token" value="{{ user.form_token }}">
+            </form>
+        </section>
+        <hr class="w-100" />
+        <br class="clearfix" />
+        {% endfor %}
+        <p>* Indicates an estimated release date due to the update file not including one</p>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function makeToast(cls, msg)
+    {
+        html = '<div id="toastnote" class="position-fixed w-100 d-flex flex-column p-4" style="z-index: 999;">' +
+            '<div class="toast ml-auto" role="alert" data-delay="1000" data-autohide="true">' +
+            '<div class="toast-body alert-' + cls + '">' + msg + '</div>' +
+            '</div></div>';
+
+        $('#header').before(html);
+        $('.toast').toast('show');
+        $('#toastnote').on('hidden.bs.toast', function () {
+            $('#toastnote').remove();
+        })
+    }
+    function updateSubscription(software, branch, status)
+    {
+        var ret = false;
+        $.ajax({
+            method: "POST",
+            url: "subscribe.php",
+            async: false,
+            data: { 
+                mode: "ajax", 
+                software: software,
+                action: status ? "set" : "unset",
+                branch: branch,
+                token: "{{ user.form_token }}"
+            }
+        })
+            .done(function (msg) {
+                var res = jQuery.parseJSON(msg);
+                if (res['error'])
+                {
+                    makeToast('danger', 'Failed to update subscriptions: ' + res['error']);
+                    ret = false;
+                }
+                else
+                {
+                    makeToast('success', 'Subscriptions updated');
+                    ret = true;
+                }
+            })
+            .fail(function() {
+                ret = false;
+                makeToast('danger', 'Failed to update subscriptions');
+            });
+
+        return ret;
+    }
+
+    function toggleAllCheckbox(element, cls)
+    {
+        if (updateSubscription(cls, null, element.checked))
+        {
+            var elems = document.getElementsByName(cls + "-sub[]");
+            for (var i = 0; i < elems.length; i++) {
+                if (elems[i].type == "checkbox") {
+                    elems[i].checked = false;
+                    elems[i].disabled = !elems[i].disabled;
+                }
+            }
+        }
+        else
+        {
+            element.checked = false;
+        }
+    }
+
+    function toggleSingleCheckbox(element, cls, branch)
+    {
+        if (!updateSubscription(cls, branch, element.checked))
+        {
+            element.checked = false;
+        }
+    }
+
+    $('.hideme').hide();
+</script>
+
+{{ include('footer.html') }}
