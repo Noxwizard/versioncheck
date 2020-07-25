@@ -103,7 +103,7 @@ foreach ($updates as $software => $branches)
                 "sub_token=%recipient.sub_token%" . 
                 "&user=%recipient.user_id%" . 
                 "&sub_email=%recipient.sub_email%" . 
-                "&software={$class::$name}" . 
+                "&software=$software" . 
                 "&branch=$branch";
             $message = "Version $version of {$class::$name} was just released. Visit their site for more information: $site\r\n\r\n" . 
             "Thanks for using versioncheck.net!\r\n\r\n\r\n" . 
