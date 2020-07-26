@@ -26,7 +26,7 @@ foreach ($classes as $class)
 
     if (!$class::$enabled)
     {
-        echo 'Skipping disabled class: ' . $class . "\n";
+        //echo 'Skipping disabled class: ' . $class . "\n";
         continue;
     }
 
@@ -36,7 +36,7 @@ foreach ($classes as $class)
         $versions = $software->get_versions($data);
     } catch (Exception $e)
     {
-        echo $e;
+        echo "Exception while getting version data for $class: $e";
         continue;
     }
     
@@ -67,7 +67,7 @@ foreach ($classes as $class)
         {
             if ($row['version'] != $version_info['version'])
             {
-                echo 'Updating ' . $class . ' from ' . $row['version'] . ' to ' . $version_info['version'] . ': ' . $id . "\n";
+                //echo 'Updating ' . $class . ' from ' . $row['version'] . ' to ' . $version_info['version'] . ': ' . $id . "\n";
                 $sql = 'UPDATE ' . VERSION_TABLE . ' SET 
                     version = :version,
                     announcement = :announcement,
@@ -87,6 +87,7 @@ foreach ($classes as $class)
 
                 if (!$ret)
                 {
+                    echo 'Error while updating version information' . "\n";
                     print_r($uph->errorInfo());
                     print_r($uph->debugDumpParams());
                     //exit;
@@ -97,7 +98,7 @@ foreach ($classes as $class)
             }
             else
             {
-                echo 'Updating ' . $class . ' ' . $row['version'] . ' checked time: ' . $id . "\n";
+                //echo 'Updating ' . $class . ' ' . $row['version'] . ' checked time: ' . $id . "\n";
                 $sql = 'UPDATE ' . VERSION_TABLE . ' SET 
                     last_check = :last_check
                 WHERE id = :id';
@@ -109,6 +110,7 @@ foreach ($classes as $class)
 
                 if (!$ret)
                 {
+                    echo 'Error while updating check time' . "\n";
                     print_r($uph->errorInfo());
                     print_r($uph->debugDumpParams());
                     //exit;
@@ -118,7 +120,7 @@ foreach ($classes as $class)
         }
         else
         {
-            echo 'Inserting new software branch: ' . $class . ' - ' . $branch . ' - ' . $version_info['version'] . "\n";
+            //echo 'Inserting new software branch: ' . $class . ' - ' . $branch . ' - ' . $version_info['version'] . "\n";
             $sql = 'INSERT INTO ' . VERSION_TABLE . ' (software, branch, version, announcement, release_date, last_check, estimated) VALUES (
                 :software, :branch, :version, :announcement, :release_date, :last_check, :estimated
             )';
@@ -135,6 +137,7 @@ foreach ($classes as $class)
 
             if (!$ret)
             {
+                echo 'Error while adding new version information' . "\n";
                 print_r($uph->errorInfo());
                 print_r($uph->debugDumpParams());
                 //exit;
@@ -144,9 +147,9 @@ foreach ($classes as $class)
             $updates[$class][$branch] = $version_info['version'];
         }
 
-        echo $software::$name . "\n";
-        echo $branch ."\n";
-        print_r($version_info);
+        //echo $software::$name . "\n";
+        //echo $branch ."\n";
+        //print_r($version_info);
     }
 
 
@@ -166,6 +169,7 @@ foreach ($classes as $class)
     
             if (!$ret)
             {
+                echo 'Error while adding notification information' . "\n";
                 print_r($sth->errorInfo());
                 print_r($sth->debugDumpParams());
                 //exit;
