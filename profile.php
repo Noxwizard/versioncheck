@@ -13,6 +13,26 @@ if ($user->user_id == GUEST_USER)
     exit;
 }
 
+function get_linked_providers($user_id)
+{
+    global $db;
+
+    $linked_providers = array();
+    $sql = 'SELECT provider_id FROM ' . LINKS_TABLE . ' WHERE user_id = :user_id';
+    $sth = $db->prepare($sql);
+    $sth->execute(array(':user_id' => $user_id));
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    if ($result !== false)
+    {
+        foreach($result as $row)
+        {
+            $linked_providers[] = (int) $row['provider_id'];
+        }
+    }
+
+    return $linked_providers;
+}
+
 // Is the user updating their email?
 $error = '';
 if (isset($_POST['submit']))
@@ -43,19 +63,8 @@ if (isset($_POST['submit']))
     }
 }
 
-$linked_providers = array();
 
-$sql = 'SELECT provider_id FROM ' . LINKS_TABLE . ' WHERE user_id = :user_id';
-$sth = $db->prepare($sql);
-$sth->execute(array(':user_id' => $user->user_id));
-$result = $sth->fetchAll(PDO::FETCH_ASSOC);
-if ($result !== false)
-{
-    foreach($result as $row)
-    {
-        $linked_providers[] = (int) $row['provider_id'];
-    }
-}
+$linked_providers = get_linked_providers($user->user_id);
 
 // Is the user trying to unlink a provider?
 if (isset($_GET['mode']))
@@ -80,6 +89,9 @@ if (isset($_GET['mode']))
                     {
                         $error = 'Error while deleting login provider';
                     }
+
+                    // Success. Refresh the linked provider list so the page is current
+                    $linked_providers = get_linked_providers($user->user_id);
                 }
                 else
                 {
