@@ -89,8 +89,21 @@ else
 
         if ($provider_id == PROVIDER_GITHUB)
         {
+            $request = $provider->getAuthenticatedRequest(
+                'GET',
+                'https://api.github.com/user/emails',
+                $accessToken
+            );
+            $emails = (array) $provider->getParsedResponse( $request );
+            foreach ( $emails as $email ) {
+                if ( $email['primary'] ) {
+                        $email = $email['email'];
+                        break;
+                }
+            }
+
             $provider_user_id   = $provider_details['id'];
-            $provider_email     = $provider_details['email'];
+            $provider_email     = isset($email) ? $email : $provider_details['email'];
             $provider_username  = $provider_details['login'];
         }
         else if ($provider_id == PROVIDER_GITLAB)
