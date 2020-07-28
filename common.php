@@ -15,6 +15,10 @@ define('PROVIDER_GITHUB', 1);
 define('PROVIDER_GITLAB', 2);
 define('PROVIDER_GOOGLE', 3);
 
+$provider_maps['github'] = PROVIDER_GITHUB;
+$provider_maps['gitlab'] = PROVIDER_GITLAB;
+$provider_maps['google'] = PROVIDER_GOOGLE;
+
 // Connect to the database
 $dsn = "mysql:host=$db_host;dbname=$db_name";
 if (empty($db_port)){

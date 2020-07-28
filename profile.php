@@ -69,13 +69,13 @@ if (isset($_GET['mode']))
         else if (isset($_GET['provider']))
         {
             $provider = $_GET['provider'];
-            if (array_key_exists($provider, $provider_configs))
+            if (array_key_exists($provider, $provider_maps))
             {
                 if (count($linked_providers) > 1)
                 {
-                    $sql = 'DELETE FROM ' . LINKS_TABLE . ' WHERE provider = :provider AND user_id = :user_id';
+                    $sql = 'DELETE FROM ' . LINKS_TABLE . ' WHERE provider_id = :provider AND user_id = :user_id';
                     $sth = $db->prepare($sql);
-                    $result = $sth->execute(array(':provider' => $provider, ':user_id' => $user->user_id));
+                    $result = $sth->execute(array(':provider' => $provider_maps[$provider], ':user_id' => $user->user_id));
                     if ($result === false)
                     {
                         $error = 'Error while deleting login provider';
