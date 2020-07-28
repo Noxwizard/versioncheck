@@ -20,7 +20,7 @@ if ($provider_name == 'github')
 {
     $provider = new \League\OAuth2\Client\Provider\Github($provider_configs['github']);
     $provider_id = PROVIDER_GITHUB;
-    $scopes = [];
+    $scopes = ['user:email'];
 }
 else if ($provider_name == 'gitlab')
 {
