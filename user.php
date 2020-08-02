@@ -57,7 +57,7 @@ class User
         $this->form_token = uuid_create(UUID_TYPE_RANDOM);
 
         // If we've been given a user ID, we also need a provider ID
-        if ($user_id !== false && $provider_id !== false)
+        if ($user_id !== false && $user_id != GUEST_USER && $provider_id !== false)
         {
             $this->user_id = (int) $user_id;
             $this->provider_id = $provider_id;
@@ -118,6 +118,12 @@ class User
     {
         global $db;
 
+        if ($this->user_id == GUEST_USER)
+        {
+            echo 'Guests cannot be linked to a provider';
+            return false;
+        }
+
         $sql = 'INSERT INTO ' . LINKS_TABLE . ' (user_id, provider_id, external_user_id) VALUES (' .
             ':user_id, :provider_id, :provider_userid)';
         $sth = $db->prepare($sql);
@@ -137,6 +143,9 @@ class User
 
     function set_provider($provider_id)
     {
-        $this->provider_id = $provider_id;
+        if ($this->user_id != GUEST_USER)
+        {
+            $this->provider_id = $provider_id;
+        }
     }
 }

@@ -149,7 +149,7 @@ else
             $result = $sth->fetch(PDO::FETCH_ASSOC);
             if ($result !== false)
             {
-                $user->session_create($result['user_id'], PROVIDER_NULL);
+                $user->session_create($result['id'], PROVIDER_NULL);
                 if (!$user->add_provider($provider_id, $provider_user_id))
                 {
                     exit;
@@ -182,9 +182,9 @@ else
             {
                 exit;
             }
+            $user->set_provider($provider_id);
         }
 
-        $user->set_provider($provider_id);
         header('Location: ' . $script_path);
         exit;
 
