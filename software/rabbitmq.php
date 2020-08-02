@@ -73,6 +73,8 @@ class rabbitmq extends SoftwareCheck
             }
             $version_info['release_date'] = $time;
 
+            $version_info['announcement'] = $release['html_url'];
+
             // Multiple versions for the same branch will be found. We only want the latest version.
             if (isset($versions[$branch]))
             {
