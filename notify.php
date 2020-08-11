@@ -44,9 +44,11 @@ foreach ($updates as $software => $branches)
             print_r($sth->debugDumpParams());
             throw new RuntimeException($sth->errorInfo());
         }
-        if (!empty($result['announcement']))
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+
+        if ($row !== false && !empty($row['announcement']))
         {
-            $site = $result['announcement'];
+            $site = $row['announcement'];
         }
         else
         {
