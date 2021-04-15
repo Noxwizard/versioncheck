@@ -13,7 +13,7 @@ class keycloak extends SoftwareCheck
     public static $enabled = true;
     var $owner = 'keycloak';
     var $repo = 'keycloak';
-    var $regex = '/^v(\d+\.\d+\.\d+).*/';
+    var $regex = '/^(\d+\.\d+\.\d+).*/';
 
     function get_data()
     {
