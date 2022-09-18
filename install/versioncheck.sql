@@ -17,7 +17,7 @@ CREATE TABLE `linked_providers` (
 CREATE TABLE `notifications` (
   `software` varchar(255) COLLATE utf8mb4_bin NOT NULL,
   `branch` varchar(16) COLLATE utf8mb4_bin NOT NULL,
-  `version` varchar(16) COLLATE utf8mb4_bin NOT NULL,
+  `version` varchar(32) COLLATE utf8mb4_bin NOT NULL,
   `last_sent_user` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
@@ -72,7 +72,7 @@ CREATE TABLE `version_info` (
   `id` int(11) NOT NULL,
   `software` varchar(255) COLLATE utf8mb4_bin NOT NULL,
   `branch` varchar(16) COLLATE utf8mb4_bin NOT NULL,
-  `version` varchar(16) COLLATE utf8mb4_bin NOT NULL,
+  `version` varchar(32) COLLATE utf8mb4_bin NOT NULL,
   `announcement` varchar(255) COLLATE utf8mb4_bin NOT NULL,
   `release_date` datetime NOT NULL,
   `last_check` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
