@@ -12,19 +12,24 @@ class smf extends SoftwareCheck
     public static $homepage = 'https://www.simplemachines.org';
     public static $type = 'custom';
     public static $enabled = true;
+    var $branches = ["2.0", "2.1"];
     var $uri = 'http://www.simplemachines.org/smf/current-version.js';
 
     function get_data()
     {
-        $data = http::get($this->uri);
-        
-        preg_match('/SMF [0-9.]*/', $data, $matches);
-        if (count($matches))
+        $results = array();
+        foreach($this->branches as $branch)
         {
-            return $matches;
+            $data = http::get($this->uri . '?version=SMF+' . $branch);
+            
+            preg_match('/SMF [0-9.]*/', $data, $matches);
+            if (count($matches))
+            {
+                $results = array_merge($results, $matches);
+            }
         }
         
-        return array();
+        return $results;
     }
 
     function get_versions($data = array())
