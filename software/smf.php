@@ -59,7 +59,7 @@ class smf extends SoftwareCheck
             $version_info = [
                 'version'       => $version,
                 'estimated'     => true,
-                'release_date'  => strftime("%Y-%m-%d %H:%M:%S"),
+                'release_date'  => date("Y-m-d H:i:s"),
             ];
 
             $versions[$branch] = $version_info;

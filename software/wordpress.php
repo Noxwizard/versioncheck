@@ -89,7 +89,7 @@ class wordpress extends SoftwareCheck
                 $branch = $version_parts[0] . '.' . $version_parts[1];
                 
                 $version_info['version'] = $release['version'];
-                $version_info['release_date'] = strftime("%Y-%m-%d %H:%M:%S");
+                $version_info['release_date'] = date("Y-m-d H:i:s");
                 $version_info['estimated'] = true;
                 $versions[$branch] = $version_info;
             }

@@ -29,7 +29,7 @@ class minio extends SoftwareCheck
             
             $info = [];
             $info['version'] = "RELEASE.{$matches[1]}-{$matches[2]}-{$matches[3]}T{$matches[4]}-{$matches[5]}-{$matches[6]}Z";
-            $info['release_date'] = strftime("%Y-%m-%d %H:%M:%S", $release_stamp);
+            $info['release_date'] = date("Y-m-d H:i:s", $release_stamp);
 
             return [$info];
         }

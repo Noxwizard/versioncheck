@@ -89,17 +89,17 @@ class atlassian_crowd extends SoftwareCheck
                     {
                         if (($timestamp = strtotime($release['released'])) !== false)
                         {
-                            $time = strftime("%Y-%m-%d %H:%M:%S", $timestamp);
+                            $time = date("Y-m-d H:i:s", $timestamp);
                         }
                         else
                         {
-                            $time = strftime("%Y-%m-%d %H:%M:%S");
+                            $time = date("Y-m-d H:i:s");
                             $version_info['estimated'] = true;
                         }
                     }
                     else
                     {
-                        $time = strftime("%Y-%m-%d %H:%M:%S");
+                        $time = date("Y-m-d H:i:s");
                         $version_info['estimated'] = true;
                     }
                     $version_info['release_date'] = $time;

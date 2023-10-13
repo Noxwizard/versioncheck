@@ -81,7 +81,7 @@ foreach ($classes as $class)
                     ':version'      => $version_info['version'],
                     ':announcement' => array_key_exists('announcement', $version_info) ? $version_info['announcement'] : '',
                     ':release_date' => $version_info['release_date'],
-                    ':last_check'   => strftime("%Y-%m-%d %H:%M:%S"),
+                    ':last_check'   => date("Y-m-d H:i:s"),
                     ':estimated'    => array_key_exists('estimated', $version_info) ? (int)$version_info['estimated'] : 0,
                 ));
 
@@ -105,7 +105,7 @@ foreach ($classes as $class)
                 $uph = $db->prepare($sql);
                 $ret = $uph->execute(array(
                     ':id'           => (int) $id,
-                    ':last_check'   => strftime("%Y-%m-%d %H:%M:%S"),
+                    ':last_check'   => date("Y-m-d H:i:s"),
                 ));
 
                 if (!$ret)
@@ -131,7 +131,7 @@ foreach ($classes as $class)
                 ':version'      => $version_info['version'],
                 ':announcement' => array_key_exists('announcement', $version_info) ? $version_info['announcement'] : '',
                 ':release_date' => $version_info['release_date'],
-                ':last_check'   => strftime("%Y-%m-%d %H:%M:%S"),
+                ':last_check'   => date("Y-m-d H:i:s"),
                 ':estimated'    => array_key_exists('estimated', $version_info) ? (int)$version_info['estimated'] : 0,
             ));
 

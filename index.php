@@ -66,7 +66,7 @@ while (($row = $result->fetch(PDO::FETCH_ASSOC)) != false)
     $all_software[$row['software']]['releases'][] = [
         'branch'        => $row['branch'],
         'version'       => $row['version'],
-        'release_date'  => strftime("%d %b %Y", strtotime($row['release_date'])),
+        'release_date'  => date("d M Y", strtotime($row['release_date'])),
         'announcement'  => $row['announcement'],
         'last_check'    => $row['last_check'],
         'estimated'     => (bool)$row['estimated'],

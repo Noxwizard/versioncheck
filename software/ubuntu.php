@@ -83,11 +83,11 @@ class ubuntu extends SoftwareCheck
                     {
                         if (($timestamp = strtotime($parts[1])) !== false)
                         {
-                            $time = strftime("%Y-%m-%d %H:%M:%S", $timestamp);
+                            $time = date("Y-m-d H:i:s", $timestamp);
                         }
                         else
                         {
-                            $time = strftime("%Y-%m-%d %H:%M:%S");
+                            $time = date("Y-m-d H:i:s");
                             $version_info['estimated'] = true;
                         }
                         $version_info['release_date'] = $time;

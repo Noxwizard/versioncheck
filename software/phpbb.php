@@ -63,7 +63,7 @@ class phpbb extends SoftwareCheck
                     $version_info['announcement'] = $data['stable'][$branch]['announcement'];
                 }
 
-                $version_info['release_date'] = strftime("%Y-%m-%d %H:%M:%S");
+                $version_info['release_date'] = date("Y-m-d H:i:s");
                 $version_info['estimated'] = true;
                 $versions[$branch] = $version_info;
             }

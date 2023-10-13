@@ -61,17 +61,17 @@ class mybb extends SoftwareCheck
                 //strptime($strf, '%b %d, %Y')
                 if (($timestamp = strtotime($data['mybb']['release_date'])) !== false)
                 {
-                    $time = strftime("%Y-%m-%d %H:%M:%S", $timestamp);
+                    $time = date("Y-m-d H:i:s", $timestamp);
                 }
                 else
                 {
-                    $time = strftime("%Y-%m-%d %H:%M:%S");
+                    $time = date("Y-m-d H:i:s");
                     $version_info['estimated'] = true;
                 }
             }
             else
             {
-                $time = strftime("%Y-%m-%d %H:%M:%S");
+                $time = date("Y-m-d H:i:s");
                 $version_info['estimated'] = true;
             }
             $version_info['release_date'] = $time;
