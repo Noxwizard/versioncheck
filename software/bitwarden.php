@@ -4,7 +4,7 @@ include_once(__DIR__ . '/../methods/github.php');
 
 //https://docs.github.com/en/rest/reference/repos#list-releases
 
-class rabbitmq extends SoftwareCheck
+class bitwarden extends SoftwareCheck
 {
     public static $name = 'Bitwarden Server Self-Hosted';
     public static $vendor = 'Bitwarden';
