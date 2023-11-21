@@ -46,7 +46,7 @@ class User
         }
 
         // Create a new session
-        $this->session_create();
+        //$this->session_create();
     }
 
     function session_create($user_id = false, $provider_id = false)
