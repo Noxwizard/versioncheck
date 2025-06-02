@@ -3,33 +3,27 @@ require_once __DIR__ . '/abstract.php';
 include_once(__DIR__ . '/../methods/http.php');
 
 /*
-Example structure of Enhance release notes:
+Example structure of Enhance apt repository Packages file:
 
-# 12.6.0
+Package: ecp-core
+Version: 12.6.0
+Architecture: amd64
+Maintainer: Enhance Ltd <backend@enhance.com>
+Installed-Size: 87858
+Depends: cron, curl, ecp-php56, ecp-php70, ecp-php71, ecp-php72, ecp-php73, ecp-php74, ecp-php80, ecp-php81, ecp-php82, ecp-php83, ecp-php84, libc6 (>= 2.34), libc6 (>= 2.38), libc6 (>= 2.39), libmilter1.0.1 (>= 8.14.1), libnss3-dev, libpam0g (>= 0.99.7.1), libssl3t64 (>= 3.0.0), linux-image-extra-virtual, openssh-server, openssl, quota, rsync, ufw, zlib1g (>= 1:1.1.4)
+Conflicts: appcd
+Replaces: appcd
+Filename: pool/noble/ecp-core_12.6.0_amd64.deb
+Size: 22096584
+MD5sum: b8d084689177aa18b52ff7ee01443156
+SHA1: b41084091113c5090f49a57f4f77b0f2d5774eec
+SHA256: 4be9b14e6004debcdbc04819d07f2e78e2624760178cd7e72041722902f87704
+Priority: optional
+Description: [generated from Rust crate appcd]
 
-### 27th May 2025
-
-Latest
-
-**_Important: You must update all the servers in your cluster when applying this update._**
-
-### Enhanced
-
-- Reinstated backup failure logging to the activity log for customers on version 12.x.
-- Moved logic for management of local .my.cnf file to appcd service for improved performance.
-
-### Fixed
-
-- Race condition where the local .my.cnf had been modified and website files were restored before databases which prevented a restore of the database.
-- Descriptive text for email rate limits was incorrect in English language.
-
-# 12.5.1
-
-### 21st May 2025
-
-### Fixed
-
-- Using SSO when a previously expired session existed would require a hard refresh.
+Package: ecp-core
+Version: 12.5.1
+...
 */
 
 class enhance extends SoftwareCheck
@@ -37,140 +31,100 @@ class enhance extends SoftwareCheck
     public static $name = 'Enhance Platform';
     public static $vendor = 'Enhance';
     public static $homepage = 'https://enhance.com/';
-    public static $type = 'html';
+    public static $type = 'apt';
     public static $enabled = true;
-    var $uri = 'https://enhance.com/support/release-notes.html';
+    var $uri = 'https://apt.enhance.com/dists/noble/main/binary-amd64/Packages';
+    var $release_uri = 'https://apt.enhance.com/dists/noble/Release';
 
     function get_data()
     {
-        $data = http::get($this->uri);
-        return $data;
+        // Get the Packages file
+        $packages_data = http::get($this->uri);
+        
+        // Get the Release file for date information
+        try {
+            $release_data = http::get($this->release_uri);
+        } catch (Exception $e) {
+            // If we can't get the Release file, just use the Packages data
+            $release_data = '';
+        }
+        
+        return [
+            'packages' => $packages_data,
+            'release' => $release_data
+        ];
     }
 
-    function get_versions($data = '')
+    function get_versions($data = array())
     {
-        if (empty($data)) {
+        if (empty($data) || !isset($data['packages']) || empty($data['packages'])) {
             return array();
         }
 
-        // Initialize versions array
+        // Extract repository date from Release file if available
+        $repo_date = date("Y-m-d H:i:s"); // Default to current date/time
+        $estimated = true;
+        
+        if (!empty($data['release'])) {
+            if (preg_match('/Date:\s+([^\n]+)/', $data['release'], $matches)) {
+                $date_str = trim($matches[1]);
+                if (($timestamp = strtotime($date_str)) !== false) {
+                    $repo_date = date("Y-m-d H:i:s", $timestamp);
+                    $estimated = false;
+                }
+            }
+        }
+        
+        // Parse Packages file
         $versions = array();
         $branch_versions = array();
+        $latest_version = null;
+        $latest_version_full = null;
         
-        // Use DOMDocument for proper HTML parsing
-        $dom = new DOMDocument();
+        // Split the Packages file into individual package entries
+        $package_entries = explode("\n\n", $data['packages']);
         
-        // Suppress warnings for malformed HTML
-        libxml_use_internal_errors(true);
-        
-        // Load the HTML content
-        $dom->loadHTML($data);
-        
-        // Reset errors
-        libxml_clear_errors();
-        
-        // Get all H1 elements (version headers)
-        $h1Elements = $dom->getElementsByTagName('h1');
-        
-        foreach ($h1Elements as $h1) {
-            $version_text = trim($h1->textContent);
-            
-            // Skip non-core versions (Appcd, WHMCS module, etc.)
-            if (preg_match('/^(Appcd|WHMCS module|PHP packages)/i', $version_text)) {
+        foreach ($package_entries as $entry) {
+            // Check if this is an ecp-core package
+            if (strpos($entry, 'Package: ecp-core') === false) {
                 continue;
             }
             
-            // Extract version number using regex
-            if (preg_match('/^(\d+\.\d+\.\d+)/', $version_text, $matches)) {
+            // Extract version
+            if (preg_match('/Version:\s+(\d+\.\d+\.\d+)/', $entry, $matches)) {
                 $version = $matches[1];
-            } else {
-                // Skip entries that don't start with a version number
-                continue;
-            }
-            
-            // Extract version components
-            $version_parts = explode('.', $version);
-            if (count($version_parts) < 3) {
-                continue;
-            }
-            
-            // Determine branch (major.minor)
-            $branch = $version_parts[0] . '.' . $version_parts[1];
-            
-            // Initialize version info
-            $version_info = array(
-                'version' => $version,
-                'release_date' => date("Y-m-d H:i:s"), // Default to current date/time
-                'estimated' => true
-            );
-            
-            // Find the release date (in H3 tag after the H1)
-            $node = $h1->nextSibling;
-            while ($node) {
-                if ($node->nodeType === XML_ELEMENT_NODE && $node->tagName === 'h3') {
-                    $date_text = trim($node->textContent);
-                    
-                    // Try to parse the date (format like "27th May 2025")
-                    if (($timestamp = strtotime($date_text)) !== false) {
-                        $version_info['release_date'] = date("Y-m-d H:i:s", $timestamp);
-                        $version_info['estimated'] = false;
-                    }
-                    break;
-                }
-                $node = $node->nextSibling;
-            }
-            
-            // Check if this is the latest version by looking for "Latest" text
-            $node = $h1;
-            $is_latest = false;
-            
-            // Look for "Latest" text in the next few siblings
-            $sibling_count = 0;
-            $max_siblings_to_check = 10; // Limit how far we look
-            
-            while ($node && $sibling_count < $max_siblings_to_check) {
-                $node = $node->nextSibling;
-                $sibling_count++;
                 
-                if (!$node) {
-                    break;
+                // Extract version components
+                $version_parts = explode('.', $version);
+                if (count($version_parts) < 3) {
+                    continue;
                 }
                 
-                // Check text nodes and element nodes
-                if ($node->nodeType === XML_TEXT_NODE) {
-                    if (stripos($node->textContent, 'Latest') !== false) {
-                        $is_latest = true;
-                        break;
-                    }
-                } elseif ($node->nodeType === XML_ELEMENT_NODE) {
-                    // Skip to next H1 (which would be the next version)
-                    if ($node->tagName === 'h1') {
-                        break;
-                    }
-                    
-                    // Check if this element contains "Latest"
-                    if (stripos($node->textContent, 'Latest') !== false) {
-                        $is_latest = true;
-                        break;
-                    }
+                // Determine branch (major.minor)
+                $branch = $version_parts[0] . '.' . $version_parts[1];
+                $patch = (int)$version_parts[2];
+                
+                // Store in branch_versions for later processing
+                if (!isset($branch_versions[$branch])) {
+                    $branch_versions[$branch] = array();
+                }
+                
+                $branch_versions[$branch][] = array(
+                    'version' => $version,
+                    'patch' => $patch,
+                    'info' => array(
+                        'version' => $version,
+                        'release_date' => $repo_date,
+                        'estimated' => $estimated
+                    )
+                );
+                
+                // Track the latest version (highest version number)
+                if ($latest_version === null || version_compare($version, $latest_version_full, '>')) {
+                    $latest_version = $branch;
+                    $latest_version_full = $version;
                 }
             }
-            
-            // Add announcement link for latest version
-            if ($is_latest) {
-                $version_info['announcement'] = 'https://enhance.com/support/release-notes.html#' . $version;
-            }
-            
-            // Store in branch_versions for later processing
-            if (!isset($branch_versions[$branch])) {
-                $branch_versions[$branch] = array();
-            }
-            
-            $branch_versions[$branch][] = array(
-                'version' => $version,
-                'info' => $version_info,
-                'patch' => (int)$version_parts[2]
-            );
         }
         
         // For each branch, keep only the highest patch version
@@ -184,6 +138,11 @@ class enhance extends SoftwareCheck
             if (!empty($branch_data)) {
                 $versions[$branch] = $branch_data[0]['info'];
             }
+        }
+        
+        // Mark only the highest version as the latest with an announcement link
+        if ($latest_version !== null && isset($versions[$latest_version])) {
+            $versions[$latest_version]['announcement'] = 'https://enhance.com/support/release-notes.html#' . $latest_version_full;
         }
         
         return $versions;
