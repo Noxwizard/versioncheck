@@ -3,7 +3,7 @@ require_once __DIR__ . '/abstract.php';
 include_once(__DIR__ . '/../methods/http.php');
 
 /*
-downloads([
+[
     {
         "description":"7.6.1 - Windows Installer (64 bit)",
         "edition":"None",
@@ -19,7 +19,7 @@ downloads([
         "upgradeNotes":"https://confluence.atlassian.com/display/DOC/Confluence+7.6+Upgrade+Notes"
     },
     ...
-])
+]
 */
 
 class atlassian_confluence extends SoftwareCheck
@@ -42,12 +42,8 @@ class atlassian_confluence extends SoftwareCheck
         foreach ($this->uris as $uri)
         {
             $raw_data = http::get($uri);
-            if (strncmp('downloads(', $raw_data, 10) === 0)
-            {
-                $trimmed = substr($raw_data, 10, -1);
-                $json = json_decode($trimmed, true, 512, JSON_THROW_ON_ERROR);
-                $data = array_merge($data, $json);
-            }
+            $json = json_decode($raw_data, true, 512, JSON_THROW_ON_ERROR);
+            $data = array_merge($data, $json);
         }
 
         return $data;

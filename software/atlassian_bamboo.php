@@ -3,7 +3,7 @@ require_once __DIR__ . '/abstract.php';
 include_once(__DIR__ . '/../methods/http.php');
 
 /*
-downloads([
+[
     {
         "description":"7.1.1 - Windows Installer, 32-bit",
         "edition":"",
@@ -19,7 +19,7 @@ downloads([
         "upgradeNotes":"https://confluence.atlassian.com/display/BAMBOO/Bamboo+Upgrade+Guide"
     },
     ...
-])
+]
 */
 
 class atlassian_bamboo extends SoftwareCheck
@@ -40,12 +40,8 @@ class atlassian_bamboo extends SoftwareCheck
         foreach ($this->uris as $uri)
         {
             $raw_data = http::get($uri);
-            if (strncmp('downloads(', $raw_data, 10) === 0)
-            {
-                $trimmed = substr($raw_data, 10, -1);
-                $json = json_decode($trimmed, true, 512, JSON_THROW_ON_ERROR);
-                $data = array_merge($data, $json);
-            }
+            $json = json_decode($raw_data, true, 512, JSON_THROW_ON_ERROR);
+            $data = array_merge($data, $json);
         }
 
         return $data;

@@ -3,7 +3,7 @@ require_once __DIR__ . '/abstract.php';
 include_once(__DIR__ . '/../methods/http.php');
 
 /*
-downloads([
+[
     {
         "description": "8.5.5 (ZIP Archive)",
         "edition": "Enterprise",
@@ -19,7 +19,7 @@ downloads([
         "upgradeNotes": "https://confluence.atlassian.com/display/JIRASOFTWARE/JIRA+Software+8.5.x+upgrade+notes"
     },
     ...
-])
+]
 */
 
 class atlassian_jira extends SoftwareCheck
@@ -43,12 +43,8 @@ class atlassian_jira extends SoftwareCheck
         {
             //$raw_data = file_get_contents(__DIR__ . '/jira.json');
             $raw_data = http::get($uri);
-            if (strncmp('downloads(', $raw_data, 10) === 0)
-            {
-                $trimmed = substr($raw_data, 10, -1);
-                $json = json_decode($trimmed, true, 512, JSON_THROW_ON_ERROR);
-                $data = array_merge($data, $json);
-            }
+            $json = json_decode($raw_data, true, 512, JSON_THROW_ON_ERROR);
+            $data = array_merge($data, $json);
         }
 
         return $data;
