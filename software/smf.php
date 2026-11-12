@@ -11,7 +11,7 @@ class smf extends SoftwareCheck
     public static $vendor = 'Simple Machines';
     public static $homepage = 'https://www.simplemachines.org';
     public static $type = 'custom';
-    public static $enabled = true;
+    public static $enabled = false; // Blocked by CloudFlare now
     var $branches = ["2.0", "2.1"];
     var $uri = 'http://www.simplemachines.org/smf/current-version.js';
 

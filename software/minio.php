@@ -14,7 +14,7 @@ class minio extends SoftwareCheck
     public static $vendor = 'MinIO, Inc.';
     public static $homepage = 'https://min.io/';
     public static $type = 'custom';
-    public static $enabled = true;
+    public static $enabled = false; // Vendor no longer provides updates
     var $regex = '/^[a-f0-9]{64} minio.RELEASE.(\d+)-(\d+)-(\d+)T(\d+)-(\d+)-(\d+)Z/';
     var $uri = 'https://dl.min.io/server/minio/release/linux-amd64/minio.sha256sum';
 
