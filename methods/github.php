@@ -23,8 +23,6 @@ class github
         $result = curl_exec($ch);
         $headers = curl_getinfo($ch);
 
-        curl_close($ch);
-
         if ($result === false || $headers['header_size'] == 0 || $headers['http_code'] != 200)
         {
             throw new \RuntimeException(curl_error($ch));

@@ -28,7 +28,7 @@ if (empty($db_port)){
 }
 
 $options = array(
-    PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4',
+    Pdo\Mysql::ATTR_INIT_COMMAND => 'SET NAMES utf8mb4',
 );
 
 try {
